@@ -27,11 +27,67 @@ public class WebSocketServer implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
+        String jsonMessage1 = """
+            {
+                "event": "App\\\\Events\\\\DadosEnviadosParaTablets",
+                "data": "{\\"dados\\":{\\"tipo\\":2,\\"comando\\":\\"ON\\",\\"mensagem\\":\\"Ativar modo kiosk\\",\\"serial_tablet\\":\\"EMULATOR34X1X20X0\\"}}",
+                "channel": "dados-tablets-EMULATOR34X1X20X0"
+            }
+        """;
+
+        String jsonMessage2 = """
+            {
+                "event": "App\\\\Events\\\\DadosEnviadosParaTablets",
+                "data": "{\\"dados\\":{\\"tipo\\":1,\\"comando\\":\\"ON\\",\\"mensagem\\":\\"Ativar modo kiosk\\",\\"serial_tablet\\":\\"EMULATOR34X1X20X0\\"}}",
+                "channel": "dados-tablets-EMULATOR34X1X20X0"
+            }
+        """;
+
+        String jsonMessage3 = """
+            {
+                "event": "App\\\\Events\\\\DadosEnviadosParaTablets",
+                "data": "{\\"dados\\":{\\"tipo\\":1,\\"comando\\":\\"OFF\\",\\"mensagem\\":\\"Ativar modo kiosk\\",\\"serial_tablet\\":\\"EMULATOR34X1X20X0\\"}}",
+                "channel": "dados-tablets-EMULATOR34X1X20X0"
+            }
+        """;
         System.out.println("Mensagem recebida: " + message.getPayload());
-        try {
-            session.sendMessage(new TextMessage("Você disse: " + message.getPayload()));
-        } catch (IOException e) {
-            System.err.println("Erro ao enviar mensagem: " + e.getMessage());
+        if (message.getPayload().equals("teste")){
+            System.out.println("entro no if de dados");
+            for (WebSocketSession wsSession : sessions.values()) {
+                System.out.println(wsSession.getId());
+                if (wsSession.isOpen()) {
+                    try {
+                        wsSession.sendMessage(new TextMessage(jsonMessage1));
+                    } catch (IOException e) {
+                        System.err.println("Erro ao enviar mensagem periódica: " + e.getMessage());
+                    }
+                }
+            }
+
+        } else if (message.getPayload().equals("teste1")) {
+            System.out.println("entro no if de ativar o kiosk");
+            for (WebSocketSession wsSession : sessions.values()) {
+                System.out.println(wsSession.getId());
+                if (wsSession.isOpen()) {
+                    try {
+                        wsSession.sendMessage(new TextMessage(jsonMessage2));
+                    } catch (IOException e) {
+                        System.err.println("Erro ao enviar mensagem periódica: " + e.getMessage());
+                    }
+                }
+            }
+        } else if (message.getPayload().equals("teste2")) {
+            System.out.println("entro no if de desativar o kiosk");
+            for (WebSocketSession wsSession : sessions.values()) {
+                System.out.println(wsSession.getId());
+                if (wsSession.isOpen()) {
+                    try {
+                        wsSession.sendMessage(new TextMessage(jsonMessage3));
+                    } catch (IOException e) {
+                        System.err.println("Erro ao enviar mensagem periódica: " + e.getMessage());
+                    }
+                }
+            }
         }
     }
 
@@ -52,16 +108,24 @@ public class WebSocketServer implements WebSocketHandler {
         return false;
     }
 
-    @Scheduled(fixedRate = 5000)  // Agendado para executar a cada 30 segundos
-    public void sendMessagePeriodically() {
-        for (WebSocketSession session : sessions.values()) {
-            if (session.isOpen()) {
-                try {
-                    session.sendMessage(new TextMessage("Mensagem periódica a cada 30 segundos"));
-                } catch (IOException e) {
-                    System.err.println("Erro ao enviar mensagem periódica: " + e.getMessage());
-                }
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 5000)  // Agendado para executar a cada 30 segundos
+//    public void sendMessagePeriodically() {
+//        String jsonMessage = """
+//            {
+//                "event": "App\\\\Events\\\\DadosEnviadosParaTablets",
+//                "data": "{\\"dados\\":{\\"tipo\\":2,\\"comando\\":\\"ON\\",\\"mensagem\\":\\"Ativar modo kiosk\\",\\"serial_tablet\\":\\"EMULATOR34X1X20X0\\"}}",
+//                "channel": "dados-tablets-EMULATOR34X1X20X0"
+//            }
+//        """;
+//
+//        for (WebSocketSession session : sessions.values()) {
+//            if (session.isOpen()) {
+//                try {
+//                    session.sendMessage(new TextMessage(jsonMessage));
+//                } catch (IOException e) {
+//                    System.err.println("Erro ao enviar mensagem periódica: " + e.getMessage());
+//                }
+//            }
+//        }
+//    }
 }
